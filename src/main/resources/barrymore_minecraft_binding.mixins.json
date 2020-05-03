@@ -4,6 +4,8 @@
   "package": "me.uquark.barrymoreminecraftbinding.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "MinecraftServerMixin",
+    "ServerPlayNetworkHandlerMixin"
   ],
   "client": [
   ],
