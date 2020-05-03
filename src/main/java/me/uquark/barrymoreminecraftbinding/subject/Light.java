@@ -10,11 +10,11 @@ import java.lang.reflect.Method;
 import java.util.Queue;
 
 public class Light {
-    public static void buildAndPutInQueue(Action action, String address, String[] parameters, Queue<Runnable> queue) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static void buildAndPutInQueue(World world, Action action, String address, String[] parameters, Queue<Runnable> queue) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String[] parts = address.split(":");
         BlockPos pos = new BlockPos(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
         Method method = Light.class.getDeclaredMethod(action.name, World.class, BlockPos.class, String[].class, Queue.class);
-        method.invoke(null, BarrymoreMinecraftBinding.instance.world, pos, parameters, queue);
+        method.invoke(null, world, pos, parameters, queue);
     }
 
     private static void turnOn(World world, BlockPos pos, String[] parameters, Queue<Runnable> queue) {
