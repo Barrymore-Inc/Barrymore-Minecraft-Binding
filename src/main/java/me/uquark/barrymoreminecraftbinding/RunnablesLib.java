@@ -1,10 +1,12 @@
-package me.uquark.barrymoreminecraftbinding.subject;
+package me.uquark.barrymoreminecraftbinding;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class RunnableLib {
+public class RunnablesLib {
     public static Runnable removeBlock(World world, BlockPos pos) {
         return () -> world.removeBlock(pos, false);
     }
@@ -15,5 +17,9 @@ public class RunnableLib {
 
     public static Runnable skipTick() {
         return () -> {};
+    }
+
+    public static Runnable chatMessage(PlayerManager playerManager, String message) {
+        return () -> playerManager.sendToAll(new LiteralText(message));
     }
 }

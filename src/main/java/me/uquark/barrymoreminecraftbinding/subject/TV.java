@@ -1,7 +1,7 @@
 package me.uquark.barrymoreminecraftbinding.subject;
 
 import me.uquark.barrymore.api.Action;
-import me.uquark.barrymoreminecraftbinding.BarrymoreMinecraftBinding;
+import me.uquark.barrymoreminecraftbinding.RunnablesLib;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -18,10 +18,10 @@ public class TV {
     }
 
     private static void turnOn(World world, BlockPos pos, String[] parameters, Queue<Runnable> queue) {
-        queue.add(RunnableLib.setRedstoneBlock(world, pos));
+        queue.add(RunnablesLib.setRedstoneBlock(world, pos));
     }
 
     private static void turnOff(World world, BlockPos pos, String[] parameters, Queue<Runnable> queue) {
-        queue.add(RunnableLib.removeBlock(world, pos));
+        queue.add(RunnablesLib.removeBlock(world, pos));
     }
 }
