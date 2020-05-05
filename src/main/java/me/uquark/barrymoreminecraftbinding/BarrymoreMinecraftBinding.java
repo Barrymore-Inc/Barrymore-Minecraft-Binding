@@ -45,7 +45,7 @@ public class BarrymoreMinecraftBinding implements ModInitializer, BarrymoreBindi
             runs.add(RunnablesLib.chatMessage(server.getPlayerManager(), order.response));
     }
 
-    public void onChatMessage(ServerPlayerEntity player, String message) {
+    public void onPlayerMessage(ServerPlayerEntity player, String message) {
         final String KEYWORD = "бэрримор";
         BlockPos pos = player.getBlockPos();
         Coords coords = new Coords(pos.getX(), pos.getY(), pos.getZ());

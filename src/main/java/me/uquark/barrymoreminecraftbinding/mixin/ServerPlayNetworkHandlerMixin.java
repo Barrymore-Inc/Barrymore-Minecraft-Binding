@@ -19,6 +19,6 @@ public class ServerPlayNetworkHandlerMixin {
     public void onChatMessage(ChatMessageC2SPacket packet, CallbackInfo info) {
         if (!Thread.currentThread().getName().equals("Server thread"))
             return;
-        BarrymoreMinecraftBinding.instance.onChatMessage(player, packet.getChatMessage());
+        BarrymoreMinecraftBinding.instance.onPlayerMessage(player, packet.getChatMessage());
     }
 }
