@@ -1,4 +1,4 @@
-package me.uquark.barrymoreminecraftbinding;
+package me.uquark.barrymoreminecraftbinding.util;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.server.PlayerManager;

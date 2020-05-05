@@ -1,7 +1,7 @@
 package me.uquark.barrymoreminecraftbinding.subject;
 
 import me.uquark.barrymore.api.Action;
-import me.uquark.barrymoreminecraftbinding.RunnablesLib;
+import me.uquark.barrymoreminecraftbinding.util.RunnablesLib;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

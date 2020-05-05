@@ -13,6 +13,9 @@
   "entrypoints": {
     "main": [
       "me.uquark.barrymoreminecraftbinding.BarrymoreMinecraftBinding"
+    ],
+    "client": [
+      "me.uquark.barrymoreminecraftbinding.BarrymoreMinecraftBindingClient"
     ]
   },
   "mixins": [
