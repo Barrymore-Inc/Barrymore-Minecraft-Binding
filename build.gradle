@@ -28,11 +28,9 @@ dependencies {
 	modImplementation "me.uquark:barrymore-api:0.3.1"
 	include "me.uquark:barrymore-api:0.3.1"
 
-	compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
 	compile 'com.google.cloud:google-cloud-speech:1.23.0'
-
-	include group: 'com.google.guava', name: 'guava', version: '29.0-jre'
 	include 'com.google.cloud:google-cloud-speech:1.23.0'
+
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }
