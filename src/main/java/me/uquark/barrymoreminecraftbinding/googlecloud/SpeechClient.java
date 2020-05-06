@@ -85,8 +85,12 @@ public class SpeechClient {
             .post(body)
             .build();
         Response response = client.newCall(request).execute();
-        if (response.code() != 200)
+        if (response.code() != 200) {
+            response.body().close();
             return null;
-        return gson.fromJson(response.body().string(), RecognitionResponse.class);
+        }
+        RecognitionResponse result = gson.fromJson(response.body().string(), RecognitionResponse.class);
+        response.body().close();
+        return result;
     }
 }

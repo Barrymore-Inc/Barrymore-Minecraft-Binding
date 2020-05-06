@@ -3,11 +3,32 @@ package me.uquark.barrymoreminecraftbinding.gui;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 
+import java.util.Random;
+
 public class SpeechRecognitionHud extends DrawableHelper {
+    private final Random random = new Random();
+
     private int animationFrame;
+    private int step1, step2;
     private boolean recognized;
     private boolean doDrawing;
     private String recognizedText;
+    private final String[] animationStrings = new String[]{
+            "▁",
+            "▂",
+            "▃",
+            "▄",
+            "▅",
+            "▆",
+            "▇",
+            "█",
+            "▇",
+            "▆",
+            "▅",
+            "▄",
+            "▃",
+            "▁"
+    };
 
     public void draw(MinecraftClient client) {
         if (!doDrawing) {
@@ -26,33 +47,18 @@ public class SpeechRecognitionHud extends DrawableHelper {
     }
 
     private String getString() {
-        final String[] animationStrings = new String[]{
-            "▁",
-            "▂",
-            "▃",
-            "▄",
-            "▅",
-            "▆",
-            "▇",
-            "█",
-            "▇",
-            "▆",
-            "▅",
-            "▄",
-            "▃",
-            "▁"
-        };
-
         if (recognized)
             return recognizedText;
         else
             return animationStrings[animationFrame % animationStrings.length] +
-                    animationStrings[(animationFrame + 4) % animationStrings.length] +
-                    animationStrings[(animationFrame + 8) % animationStrings.length];
+                    animationStrings[(animationFrame + step1) % animationStrings.length] +
+                    animationStrings[(animationFrame + step2) % animationStrings.length];
     }
 
     public void startAnimation() {
         doDrawing = true;
+        step1 = random.nextInt(animationStrings.length);
+        step2 = random.nextInt(animationStrings.length);
     }
 
     public void recognized(String text) {

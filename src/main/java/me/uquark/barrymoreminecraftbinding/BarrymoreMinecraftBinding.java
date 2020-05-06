@@ -8,7 +8,6 @@ import net.fabricmc.fabric.api.event.server.ServerTickCallback;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -56,6 +55,8 @@ public class BarrymoreMinecraftBinding implements ModInitializer, BarrymoreBindi
     }
 
     public void onPlayerMessage(PlayerEntity player, String message) {
+        if (brain == null)
+            return;
         final String KEYWORD = "бэрримор";
         BlockPos pos = player.getBlockPos();
         Coords coords = new Coords(pos.getX(), pos.getY(), pos.getZ());

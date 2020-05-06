@@ -3,7 +3,6 @@ package me.uquark.barrymoreminecraftbinding;
 import io.netty.buffer.Unpooled;
 import me.uquark.barrymoreminecraftbinding.googlecloud.SpeechClient;
 import me.uquark.barrymoreminecraftbinding.gui.SpeechRecognitionHud;
-import me.uquark.barrymoreminecraftbinding.mixin.InGameHudMixin;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
 import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
@@ -31,7 +30,7 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
     public static List<SpeechRecognitionHud> huds = new ArrayList<>();
 
     private final Logger LOGGER = LogManager.getLogger();
-    private final AudioFormat format = new AudioFormat(16000, 16, 1, true, false);
+    private final AudioFormat format = new AudioFormat(8000, 16, 1, true, false);
     private final SpeechRecognitionHud speechRecognitionHud = new SpeechRecognitionHud();
 
     private FabricKeyBinding keyBinding;
@@ -65,6 +64,7 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
     private void startRecording() {
         recording = true;
         new Thread(() -> {
+            speechRecognitionHud.startAnimation();
             byte[] buffer = new byte[microphone.getBufferSize() / 5];
             int bytesRead;
             out = new ByteArrayOutputStream();
@@ -84,8 +84,6 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
 
     private void recognize() {
         new Thread(() -> {
-            speechRecognitionHud.startAnimation();
-
             SpeechClient.RecognitionRequest request = new SpeechClient.RecognitionRequest();
             request.config.sampleRateHertz = (int) format.getSampleRate();
             request.config.audioChannelCount = format.getChannels();
@@ -98,17 +96,16 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
 
             try {
                 SpeechClient.RecognitionResponse response = SpeechClient.recognizeRaw(request);
-                if (response == null || response.results == null || response.results.length == 0) {
-                    speechRecognitionHud.stopAnimation();
+                if (response == null || response.results == null || response.results.length == 0)
                     return;
-                }
                 String message = response.results[0].alternatives[0].transcript;
                 speechRecognitionHud.recognized(message);
                 sendMessageToServer(message);
                 Thread.sleep(3000);
-                speechRecognitionHud.stopAnimation();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
+            } finally {
+                speechRecognitionHud.stopAnimation();
             }
         }).start();
     }
