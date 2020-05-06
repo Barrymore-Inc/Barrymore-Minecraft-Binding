@@ -11,7 +11,7 @@ public class SpeechRecognitionHud extends DrawableHelper {
     private int animationFrame;
     private int step1, step2;
     private boolean recognized;
-    private boolean doDrawing;
+    private boolean doRender;
     private String recognizedText;
     private final String[] animationStrings = new String[]{
             "▁",
@@ -31,7 +31,7 @@ public class SpeechRecognitionHud extends DrawableHelper {
     };
 
     public void draw(MinecraftClient client) {
-        if (!doDrawing) {
+        if (!doRender) {
             recognized = false;
             animationFrame = 0;
             return;
@@ -55,8 +55,8 @@ public class SpeechRecognitionHud extends DrawableHelper {
                     animationStrings[(animationFrame + step2) % animationStrings.length];
     }
 
-    public void startAnimation() {
-        doDrawing = true;
+    public void startRender() {
+        doRender = true;
         step1 = random.nextInt(animationStrings.length);
         step2 = random.nextInt(animationStrings.length);
     }
@@ -66,7 +66,7 @@ public class SpeechRecognitionHud extends DrawableHelper {
         recognizedText = text;
     }
 
-    public void stopAnimation() {
-        doDrawing = false;
+    public void stopRender() {
+        doRender = false;
     }
 }

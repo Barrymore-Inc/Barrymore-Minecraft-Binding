@@ -37,6 +37,7 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
     private TargetDataLine microphone;
     private ByteArrayOutputStream out;
     private volatile boolean recording = false;
+    private final List<String> phrases = new ArrayList<>();
 
     @Override
     public void onInitializeClient() {
@@ -53,27 +54,39 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
 
         try {
             microphone = AudioSystem.getTargetDataLine(format);
-            microphone.open(format);
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
 
         huds.add(speechRecognitionHud);
+
+        ClientSidePacketRegistry.INSTANCE.register(BarrymoreMinecraftBinding.RECOGNITION_CONTEXT_PACKET_ID, (packetContext, packetByteBuf) -> {
+            String phrase = "";
+            while ((phrase = packetByteBuf.readString()) != null && !phrase.equals(""))
+                phrases.add(phrase);
+        });
     }
 
     private void startRecording() {
         recording = true;
         new Thread(() -> {
-            speechRecognitionHud.startAnimation();
-            byte[] buffer = new byte[microphone.getBufferSize() / 5];
-            int bytesRead;
-            out = new ByteArrayOutputStream();
-            microphone.start();
-            while (recording) {
-                bytesRead = microphone.read(buffer, 0, buffer.length);
-                out.write(buffer, 0, buffer.length);
+            try {
+                speechRecognitionHud.startRender();
+                byte[] buffer = new byte[microphone.getBufferSize() / 5];
+                int bytesRead;
+                out = new ByteArrayOutputStream();
+                microphone.open(format);
+                microphone.start();
+                while (recording) {
+                    bytesRead = microphone.read(buffer, 0, buffer.length);
+                    out.write(buffer, 0, bytesRead);
+                }
+                microphone.stop();
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            } finally {
+                microphone.close();
             }
-            microphone.stop();
         }).start();
     }
 
@@ -82,19 +95,26 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
         recognize();
     }
 
+    private SpeechClient.RecognitionRequest.RecognitionConfig.SpeechContext getContext() {
+        SpeechClient.RecognitionRequest.RecognitionConfig.SpeechContext context = new SpeechClient.RecognitionRequest.RecognitionConfig.SpeechContext();
+        phrases.toArray(context.phrases);
+        return context;
+    }
+
     private void recognize() {
         new Thread(() -> {
-            SpeechClient.RecognitionRequest request = new SpeechClient.RecognitionRequest();
-            request.config.sampleRateHertz = (int) format.getSampleRate();
-            request.config.audioChannelCount = format.getChannels();
-            request.config.encoding = SpeechClient.RecognitionRequest.RecognitionConfig.AudioEncoding.LINEAR16;
-            request.config.model = "command_and_search";
-            request.config.useEnhanced = true;
-            request.config.languageCode = "ru-RU";
-
-            request.audio.content = Base64.getEncoder().encodeToString(out.toByteArray());
-
             try {
+                SpeechClient.RecognitionRequest request = new SpeechClient.RecognitionRequest();
+                request.config.sampleRateHertz = (int) format.getSampleRate();
+                request.config.audioChannelCount = format.getChannels();
+                request.config.encoding = SpeechClient.RecognitionRequest.RecognitionConfig.AudioEncoding.LINEAR16;
+                request.config.model = "command_and_search";
+                request.config.useEnhanced = true;
+                request.config.languageCode = "ru-RU";
+                request.config.speechContexts = new SpeechClient.RecognitionRequest.RecognitionConfig.SpeechContext[] {getContext()};
+
+                request.audio.content = Base64.getEncoder().encodeToString(out.toByteArray());
+
                 SpeechClient.RecognitionResponse response = SpeechClient.recognizeRaw(request);
                 if (response == null || response.results == null || response.results.length == 0)
                     return;
@@ -105,7 +125,7 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                speechRecognitionHud.stopAnimation();
+                speechRecognitionHud.stopRender();
             }
         }).start();
     }
