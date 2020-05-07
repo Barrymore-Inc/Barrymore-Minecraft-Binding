@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class SpeechClient {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final String URL = "https://speech.googleapis.com/v1/speech:recognize";
+    private static final String URL = "https://speech.googleapis.com/v1/speech:recognize?key=" + Auth.API_KEY;
     private static final OkHttpClient client = new OkHttpClient();
     private static final Gson gson = new Gson();
 
@@ -81,7 +81,6 @@ public class SpeechClient {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
             .url(URL)
-            .header("Authorization", "Bearer " + Auth.getAccessToken())
             .post(body)
             .build();
         Response response = client.newCall(request).execute();

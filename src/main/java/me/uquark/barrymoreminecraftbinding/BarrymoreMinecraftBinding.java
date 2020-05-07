@@ -90,6 +90,8 @@ public class BarrymoreMinecraftBinding implements ModInitializer, BarrymoreBindi
             Registry registry = LocateRegistry.getRegistry(BarrymoreConfig.BARRYMORE_RMI_REGISTRY_PORT);
             brain = (BarrymoreBrain) registry.lookup("BarrymoreBrain");
             server = minecraftServer;
+
+            phrases = brain.getPhrases();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -61,9 +61,8 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
         huds.add(speechRecognitionHud);
 
         ClientSidePacketRegistry.INSTANCE.register(BarrymoreMinecraftBinding.RECOGNITION_CONTEXT_PACKET_ID, (packetContext, packetByteBuf) -> {
-            String phrase = "";
-            while ((phrase = packetByteBuf.readString()) != null && !phrase.equals(""))
-                phrases.add(phrase);
+            while (packetByteBuf.isReadable())
+                phrases.add(packetByteBuf.readString());
         });
     }
 
@@ -97,7 +96,7 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
 
     private SpeechClient.RecognitionRequest.RecognitionConfig.SpeechContext getContext() {
         SpeechClient.RecognitionRequest.RecognitionConfig.SpeechContext context = new SpeechClient.RecognitionRequest.RecognitionConfig.SpeechContext();
-        phrases.toArray(context.phrases);
+        context.phrases = phrases.toArray(new String[0]);
         return context;
     }
 

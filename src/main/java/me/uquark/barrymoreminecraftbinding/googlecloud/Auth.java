@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 
 public class Auth {
     private static String accessToken = null;
+    public static final String API_KEY = "AIzaSyBgMtO1uopLrub7KRiIgNUq3N7yHSJHCBs";
 
     private static void retrieveAccessToken() throws IOException, InterruptedException {
         Runtime rt = Runtime.getRuntime();
