@@ -12,8 +12,8 @@ group = project.maven_group
 
 dependencies {
 	repositories {
-		flatDir {
-			dirs "/home/uquark/Projects/Barrymore-API/target/"
+		maven {
+			url "https://raw.github.com/Barrymore-Inc/Barrymore-API/repository"
 		}
 	}
 
