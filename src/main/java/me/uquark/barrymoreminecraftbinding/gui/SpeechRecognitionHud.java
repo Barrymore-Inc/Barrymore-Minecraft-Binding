@@ -3,17 +3,20 @@ package me.uquark.barrymoreminecraftbinding.gui;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 
-import java.util.Random;
-
 public class SpeechRecognitionHud extends DrawableHelper {
-    private final Random random = new Random();
+    public enum Mode {
+        Listening,
+        Recognizing,
+        Result,
+        None
+    }
 
-    private int animationFrame;
-    private int step1, step2;
-    private boolean recognized;
-    private boolean doRender;
-    private String recognizedText;
-    private final String[] animationStrings = new String[]{
+    private Mode mode = Mode.None;
+    private int frame;
+    private String message;
+    private Thread delayThread;
+
+    private final String[] listeningColon = new String[]{
             "▁",
             "▂",
             "▃",
@@ -31,42 +34,70 @@ public class SpeechRecognitionHud extends DrawableHelper {
     };
 
     public void draw(MinecraftClient client) {
-        if (!doRender) {
-            recognized = false;
-            animationFrame = 0;
-            return;
+        frame++;
+        switch (mode) {
+            case Listening:
+            case Recognizing:
+                drawListeningColons(client);
+                break;
+            case Result:
+                drawResult(client);
+                break;
+            case None:
+                frame = 0;
+                break;
         }
+    }
+
+    private void drawListeningColons(MinecraftClient client) {
         drawString(
             client.textRenderer,
-            getString(),
+            listeningColon[frame % listeningColon.length] + listeningColon[(frame + 4) % listeningColon.length] + listeningColon[(frame + 8) % listeningColon.length],
             5,
             5,
             0xFFFFFF
         );
-        animationFrame++;
     }
 
-    private String getString() {
-        if (recognized)
-            return recognizedText;
-        else
-            return animationStrings[animationFrame % animationStrings.length] +
-                    animationStrings[(animationFrame + step1) % animationStrings.length] +
-                    animationStrings[(animationFrame + step2) % animationStrings.length];
+    private void drawResult(MinecraftClient client) {
+        drawString(
+            client.textRenderer,
+                message,
+            5,
+            5,
+            0xFFFFFF
+        );
     }
 
-    public void startRender() {
-        doRender = true;
-        step1 = random.nextInt(animationStrings.length);
-        step2 = random.nextInt(animationStrings.length);
+    public void listening() {
+        interruptDelayThread();
+        mode = Mode.Listening;
     }
 
-    public void recognized(String text) {
-        recognized = true;
-        recognizedText = text;
+    public void recognizing() {
+        interruptDelayThread();
+        mode = Mode.Recognizing;
     }
 
-    public void stopRender() {
-        doRender = false;
+    public void result(String message) {
+        interruptDelayThread();
+        this.message = message;
+        mode = Mode.Result;
+    }
+
+    public void interruptDelayThread() {
+        if (delayThread != null && delayThread.isAlive())
+            delayThread.interrupt();
+    }
+
+    public void resetAfter(long delay) {
+        delayThread = new Thread(() -> {
+            try {
+                Thread.sleep(delay);
+                this.message = "";
+                mode = Mode.None;
+            } catch (InterruptedException ignored) {}
+        });
+        delayThread.start();
     }
 }
