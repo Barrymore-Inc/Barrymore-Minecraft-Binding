@@ -41,7 +41,7 @@ public class BarrymoreMinecraftBinding implements ModInitializer, BarrymoreBindi
         ServerTickCallback.EVENT.register(this);
 
         ServerSidePacketRegistry.INSTANCE.register(SPEECH_RECOGNIZED_PACKET_ID, (packetContext, packetByteBuf) -> {
-            onPlayerMessage(packetContext.getPlayer(), packetByteBuf.readString());
+            onPlayerMessage(packetContext.getPlayer(), packetByteBuf.readString(), false);
         });
     }
 
@@ -60,15 +60,16 @@ public class BarrymoreMinecraftBinding implements ModInitializer, BarrymoreBindi
             runs.add(RunnablesLib.chatMessage(server.getPlayerManager(), order.response));
     }
 
-    public void onPlayerMessage(PlayerEntity player, String message) {
+    public void onPlayerMessage(PlayerEntity player, String message, boolean isChatMessage) {
         if (brain == null)
             return;
         final String KEYWORD = "бэрримор";
         BlockPos pos = player.getBlockPos();
         Coords coords = new Coords(pos.getX(), pos.getY(), pos.getZ());
         message = message.toLowerCase();
-        if (message.contains(KEYWORD))
+        if (!isChatMessage || message.contains(KEYWORD))
             try {
+                message = message.replace(KEYWORD, "");
                 processOrder(brain.processUserMessage(coords, message), player);
             } catch (RemoteException | NullPointerException e) {
                 e.printStackTrace();
