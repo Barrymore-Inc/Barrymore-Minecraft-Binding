@@ -7,7 +7,7 @@ import javax.sound.sampled.TargetDataLine;
 import java.io.ByteArrayOutputStream;
 
 public class Recorder {
-    public final AudioFormat format = new AudioFormat(8000, 16, 1, true, false);
+    public final AudioFormat format = new AudioFormat(8000, 8, 1, true, false);
     private TargetDataLine microphone;
     private volatile boolean recording = false;
     private ByteArrayOutputStream audio;

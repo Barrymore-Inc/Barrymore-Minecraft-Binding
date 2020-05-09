@@ -37,6 +37,9 @@ dependencies {
 	modImplementation "com.squareup.okio:okio:1.6.0"
 	include "com.squareup.okio:okio:1.6.0"
 
+	modImplementation group: 'net.sourceforge.javaflacencoder', name: 'java-flac-encoder', version: '0.3.6'
+	include group: 'net.sourceforge.javaflacencoder', name: 'java-flac-encoder', version: '0.3.6'
+
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 }
