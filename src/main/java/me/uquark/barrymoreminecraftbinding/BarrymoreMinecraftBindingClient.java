@@ -1,6 +1,7 @@
 package me.uquark.barrymoreminecraftbinding;
 
 import io.netty.buffer.Unpooled;
+import me.uquark.barrymoreminecraftbinding.audio.FLAC;
 import me.uquark.barrymoreminecraftbinding.audio.Recorder;
 import me.uquark.barrymoreminecraftbinding.googlecloud.SpeechClient;
 import me.uquark.barrymoreminecraftbinding.gui.SpeechRecognitionHud;
@@ -17,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -68,13 +70,13 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
                 SpeechClient.RecognitionRequest request = new SpeechClient.RecognitionRequest();
                 request.config.sampleRateHertz = (int) recorder.format.getSampleRate();
                 request.config.audioChannelCount = recorder.format.getChannels();
-                request.config.encoding = SpeechClient.RecognitionRequest.RecognitionConfig.AudioEncoding.LINEAR16;
+                request.config.encoding = SpeechClient.RecognitionRequest.RecognitionConfig.AudioEncoding.FLAC;
                 request.config.model = "command_and_search";
                 request.config.useEnhanced = true;
                 request.config.languageCode = "ru-RU";
                 request.config.speechContexts = new SpeechClient.RecognitionRequest.RecognitionConfig.SpeechContext[] {getContext()};
 
-                request.audio.content = Base64.getEncoder().encodeToString(audio);
+                request.audio.content = Base64.getEncoder().encodeToString(FLAC.encode(recorder.format, audio));
 
                 SpeechClient.RecognitionResponse response = SpeechClient.recognizeRaw(request);
                 if (response == null || response.results == null || response.results.length == 0) {
@@ -85,7 +87,7 @@ public class BarrymoreMinecraftBindingClient implements ClientModInitializer, Cl
                 sendMessageToServer(message);
                 speechRecognitionHud.result(message);
                 speechRecognitionHud.resetAfter(3000);
-            } catch (IOException e) {
+            } catch (IOException | UnsupportedAudioFileException e) {
                 e.printStackTrace();
             }
         }).start();
