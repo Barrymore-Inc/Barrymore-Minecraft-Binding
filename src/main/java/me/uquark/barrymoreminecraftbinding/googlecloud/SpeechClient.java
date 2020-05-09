@@ -11,10 +11,6 @@ public class SpeechClient {
     private static final OkHttpClient client = new OkHttpClient();
     private static final Gson gson = new Gson();
 
-    static {
-        Auth.getAccessToken();
-    }
-
     public static class RecognitionRequest {
         public static class RecognitionConfig {
             public enum AudioEncoding {
